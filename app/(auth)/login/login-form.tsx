@@ -1,27 +1,24 @@
 "use client"
 
 import { useActionState, useState } from "react"
-import registerAction from "@/app/dal/user"
+import { loginAction } from "@/app/dal/user"
 import Form from "next/form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FaEye, FaEyeSlash, FaSpinner } from "react-icons/fa"
 import { z } from "zod"
-import { registerSchema, type RegisterFormData } from "@/app/lib/validation"
-import PasswordStrength from "@/components/ui/password-strength"
+import { loginSchema, type LoginFormData } from "@/app/lib/validation"
 
 type FieldErrors = {
-  name?: string
   email?: string
   password?: string
 }
 
-const RegisterForm = () => {
-  const [state, formAction, isPending] = useActionState(registerAction, null)
+const LoginForm = () => {
+  const [state, formAction, isPending] = useActionState(loginAction, null)
   const [showPassword, setShowPassword] = useState(false)
-  const [formData, setFormData] = useState<RegisterFormData>({
-    name: "",
+  const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   })
@@ -32,9 +29,9 @@ const RegisterForm = () => {
     setShowPassword(!showPassword)
   }
 
-  const validateField = (field: keyof RegisterFormData, value: string) => {
+  const validateField = (field: keyof LoginFormData, value: string) => {
     try {
-      const fieldSchema = registerSchema.shape[field]
+      const fieldSchema = loginSchema.shape[field]
       fieldSchema.parse(value)
       return undefined
     } catch (error) {
@@ -45,7 +42,7 @@ const RegisterForm = () => {
     }
   }
 
-  const handleInputChange = (field: keyof RegisterFormData, value: string) => {
+  const handleInputChange = (field: keyof LoginFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
 
     if (touched[field]) {
@@ -54,13 +51,13 @@ const RegisterForm = () => {
     }
   }
 
-  const handleBlur = (field: keyof RegisterFormData) => {
+  const handleBlur = (field: keyof LoginFormData) => {
     setTouched((prev) => ({ ...prev, [field]: true }))
     const fieldError = validateField(field, formData[field])
     setErrors((prev) => ({ ...prev, [field]: fieldError }))
   }
 
-  const getInputClassName = (field: keyof RegisterFormData) => {
+  const getInputClassName = (field: keyof LoginFormData) => {
     const baseClass =
       "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
     if (touched[field] && errors[field]) {
@@ -74,7 +71,7 @@ const RegisterForm = () => {
 
   const isFormValid = () => {
     try {
-      registerSchema.parse(formData)
+      loginSchema.parse(formData)
       return true
     } catch {
       return false
@@ -83,7 +80,7 @@ const RegisterForm = () => {
 
   return (
     <>
-      {state?.success === "false" && (
+      {state?.success === false && (
         <div
           className="flex flex-col mb-6 text-sm bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative"
           role="alert"
@@ -93,31 +90,6 @@ const RegisterForm = () => {
         </div>
       )}
       <Form action={formAction} className="space-y-4">
-        <div className="space-y-1">
-          <Label htmlFor="name" className="text-sm font-medium text-white">
-            Name
-          </Label>
-          <Input
-            id="name"
-            type="text"
-            name="name"
-            required
-            maxLength={50}
-            placeholder="Your Name"
-            className={getInputClassName("name")}
-            value={formData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
-            onBlur={() => handleBlur("name")}
-          />
-          {formData.name.length > 0 && (
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>{formData.name.length}/50 characters</span>
-            </div>
-          )}
-          {touched.name && errors.name && (
-            <p className="text-xs text-red-500 mt-1">{errors.name}</p>
-          )}
-        </div>
         <div className="space-y-1">
           <Label htmlFor="email" className="text-sm font-medium text-white">
             Email
@@ -134,11 +106,6 @@ const RegisterForm = () => {
             onChange={(e) => handleInputChange("email", e.target.value)}
             onBlur={() => handleBlur("email")}
           />
-          {formData.email.length > 0 && (
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>{formData.email.length}/254 characters</span>
-            </div>
-          )}
           {touched.email && errors.email && (
             <p className="text-xs text-red-500 mt-1">{errors.email}</p>
           )}
@@ -153,12 +120,12 @@ const RegisterForm = () => {
               type={showPassword ? "text" : "password"}
               name="password"
               required
+              maxLength={128}
               placeholder=""
               className={getInputClassName("password") + " pr-12"}
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
               onBlur={() => handleBlur("password")}
-              maxLength={128}
             />
             <button
               type="button"
@@ -168,14 +135,6 @@ const RegisterForm = () => {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-          
-          {formData.password.length > 0 && (
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>{formData.password.length}/128 characters</span>
-            </div>
-          )}
-          
-          <PasswordStrength password={formData.password} className="mt-2" />
 
           {touched.password && errors.password && (
             <p className="text-xs text-red-500 mt-1">{errors.password}</p>
@@ -195,10 +154,10 @@ const RegisterForm = () => {
             {isPending ? (
               <div className="flex items-center justify-center space-x-2">
                 <FaSpinner className="animate-spin" />
-                <span>Registering...</span>
+                <span>Signing in...</span>
               </div>
             ) : (
-              "Register"
+              "Sign In"
             )}
           </Button>
         </div>
@@ -207,4 +166,4 @@ const RegisterForm = () => {
   )
 }
 
-export default RegisterForm
+export default LoginForm

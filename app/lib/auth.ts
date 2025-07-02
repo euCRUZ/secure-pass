@@ -7,10 +7,10 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: "database",
-  },
+  // adapter: PrismaAdapter(prisma),
+  // session: {
+  //   strategy: "database",
+  // },
   providers: [
     Credentials({
       credentials: {
@@ -27,8 +27,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // auth logic here
         // find user with credentials
         const user = await findUserByCredentials(
-          credentials.email,
-          credentials.password
+          credentials.email as string,
+          credentials.password as string
         )
 
         return user
