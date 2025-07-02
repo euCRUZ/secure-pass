@@ -1,7 +1,7 @@
 "use server"
 
 import { loginSchema } from "@/app/lib/validation"
-import { signIn } from "@/app/lib/auth"
+import { signIn } from "@/auth"
 import { sanitizeEmail } from "@/app/lib/security"
 import { findUser } from "@/app/dal/user"
 import { verifyPassword } from "@/app/dal/user"

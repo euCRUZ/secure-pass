@@ -1,6 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import Credentials from "next-auth/providers/credentials"
-import { findUserByCredentials } from "./user"
+import { findUserByCredentials } from "./app/lib/user"
 import NextAuth from "next-auth"
 import { PrismaClient } from "@prisma/client"
 

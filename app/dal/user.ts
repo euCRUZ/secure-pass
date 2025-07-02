@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client"
 import { redirect } from "next/navigation"
 import { sanitizeString, sanitizeEmail } from "@/app/lib/security"
 import { registerSchema } from "@/app/lib/validation"
-import { signIn } from "@/app/lib/auth"
+import { signIn } from "@/auth"
 declare global {
   var prisma: PrismaClient | undefined
 }
